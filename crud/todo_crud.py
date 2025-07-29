@@ -15,10 +15,19 @@ def create_todo(db: Session, todo: schemas.TodoCreate, user_id: int):
     db.refresh(db_todo)
     return db_todo
 
-def delete_todo(db: Session, todo_id: int):
+def delete_todo(db: Session, todo_id: int, current_user: TodoUsers):
     todo = get_todo_by_id(db, todo_id)
-    if todo:
+    if todo and todo.user_id == current_user.id:
         db.delete(todo)
         db.commit()
         return True
     return False
+
+def toggle_todo_completed(db: Session, todo_id: int, current_user: TodoUsers):
+    todo = get_todo_by_id(db, todo_id)
+    if todo and todo.user_id == current_user.id:
+        todo.completed = not todo.completed
+        db.commit()
+        db.refresh(todo)
+        return todo
+    return None

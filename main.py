@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import schemas
-from crud import create_todo, get_todo_by_id, get_todos, delete_todo, create_user, login_user
+from crud import create_todo, get_todo_by_id, get_todos, delete_todo, create_user, login_user, toggle_todo_completed
 from models import TodoUsers
 from database import SessionLocal, engine, Base
-from utils import create_access_token, decode_access_token
+from utils import decode_access_token
 from fastapi.openapi.utils import get_openapi
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -69,7 +69,6 @@ def create_todo_route(todo: schemas.TodoCreate, db: Session = Depends(get_db), c
 
 @app.get("/todos/", response_model=list[schemas.TodoOut], )
 def read_todos(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
-    breakpoint()
     return get_todos(db, current_user)
 
 @app.get("/todos/{id}", response_model=schemas.TodoOut)
@@ -85,11 +84,22 @@ def delete_todo_route(
     db: Session = Depends(get_db),
     current_user: TodoUsers = Depends(get_current_user)
 ):
-    success = delete_todo(db, id)
+    success = delete_todo(db, id, current_user)
 
     if not success:
         raise HTTPException(status_code=404, detail="Todo not found")
     return {"message": "Deleted successfully"}
+
+@app.put("/todos/{id}/toggle", response_model=schemas.TodoOut)
+def toggle_todo_route(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: TodoUsers = Depends(get_current_user)
+):
+    updated_todo = toggle_todo_completed(db, id, current_user)
+    if not updated_todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return updated_todo
 
 @app.post("/create/users", response_model=schemas.LoginResponse)
 def create_user_route(user: schemas.UserBase, db: Session = Depends(get_db)):
