@@ -12,10 +12,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 from database import Base, engine  # Adjust if needed
 import models.todo_todo  # import all model files so Alembic sees them
 import models.todo_user
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+# override the URL from environment
+url = os.getenv("DATABASE_URL")
+if url is None:
+    raise Exception("DATABASE_URL not set in .env or environment")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+config.set_main_option("sqlalchemy.url", url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
