@@ -6,6 +6,7 @@ from models import TodoUsers
 from database import SessionLocal, engine, Base
 from utils import decode_access_token
 from fastapi.openapi.utils import get_openapi
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 oauth2_scheme = HTTPBearer()
@@ -24,7 +25,13 @@ def get_db():
         db.close()
 
 
-app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],  # allow all methods like GET, POST, PUT, DELETE
+    allow_headers=["*"],  # allow all headers
+)
 
 bearer_scheme = HTTPBearer()
 

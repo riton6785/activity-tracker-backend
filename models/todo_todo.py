@@ -12,8 +12,8 @@ class Todo(Base):
     id = Column(Integer, primary_key=True)
     task = Column(String, nullable=False)
     completed = Column(Boolean, default=False)
-    summary = Column(String, default="No summary provided")
-    due_date = Column(Date, default=default_date)
+    summary = Column(String, default="No summary provided", nullable=True)
+    due_date = Column(Date, default=default_date, nullable=True)
     finish_note = Column(String)
 
     user_id = Column(Integer, ForeignKey('todo_users.id', ondelete='CASCADE'))
