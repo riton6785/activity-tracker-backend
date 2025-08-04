@@ -9,6 +9,8 @@ class TodoUsers(Base):
     name = Column(String, nullable = False)
     password = Column(String, nullable = False)
     email = Column(String, nullable = False)
+    purpose = Column(String, nullable = False, default="My purpose is secret")
+    mobile_no = Column(String, nullable = False, default="9898989898")
 
     todos = relationship('Todo', back_populates='owner', cascade="all, delete", passive_deletes=True)
     

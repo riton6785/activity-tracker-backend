@@ -8,7 +8,7 @@ from utils import create_access_token
 def create_user(db: Session, user: schemas.UserBase):
     hashed_password = hash_password(user.password)
     create_user = TodoUsers(
-        name = user.name, email=user.email, password=hashed_password
+        name = user.name, email=user.email, password=hashed_password, purpose=user.purpose, mobile_no=user.mobile_no
     )
     db.add(create_user)
     db.commit()
