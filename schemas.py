@@ -23,14 +23,15 @@ class UserLogin(BaseModel):
 
 class UserBase(UserLogin):
     name: str
-    email: str
-    password: str
     mobile_no: str
     purpose: str
 
-class UserOut(UserBase):
+class UserOut(BaseModel):
     id: int
-    todos: list[TodoOut] = []
+    name: str
+    email: str
+    purpose: str
+    mobile_no: str
 
     class Config:
         from_attributes = True
@@ -42,3 +43,7 @@ class LoginResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ToggleNote(BaseModel):
+    id: int
+    notes: str

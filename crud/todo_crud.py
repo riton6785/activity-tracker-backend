@@ -1,9 +1,22 @@
+from datetime import date
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from models import Todo, TodoUsers
 import schemas
 
 def get_todos(db: Session, current_user: TodoUsers):
     return db.query(Todo).filter(Todo.user_id == current_user.id).all()
+
+def get_overdue_todos(db: Session, current_user: TodoUsers):
+    return db.query(Todo).filter(
+        and_(
+            Todo.user_id == current_user.id,
+            Todo.due_date < date.today()
+        )
+    ).all()
+
+def get_completed_activities(db: Session, current_user: TodoUsers):
+    return db.query(Todo).filter(Todo.completed == True and Todo.user_id == current_user.id).all()
 
 def get_todo_by_id(db: Session, todo_id: int):
     return db.query(Todo).filter(Todo.id == todo_id).first()
@@ -23,10 +36,11 @@ def delete_todo(db: Session, todo_id: int, current_user: TodoUsers):
         return True
     return False
 
-def toggle_todo_completed(db: Session, todo_id: int, current_user: TodoUsers):
-    todo = get_todo_by_id(db, todo_id)
+def toggle_todo_completed(db: Session, current_user: TodoUsers, toggle_data: schemas.ToggleNote):
+    todo = get_todo_by_id(db, toggle_data.id)
     if todo and todo.user_id == current_user.id:
         todo.completed = not todo.completed
+        todo.finish_note = toggle_data.notes
         db.commit()
         db.refresh(todo)
         return todo

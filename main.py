@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import schemas
-from crud import create_todo, get_todo_by_id, get_todos, delete_todo, create_user, login_user, toggle_todo_completed
+from crud import create_todo, get_todo_by_id, get_todos, delete_todo, create_user, login_user, toggle_todo_completed, get_overdue_todos, get_completed_activities
 from models import TodoUsers
 from database import SessionLocal, engine, Base
 from utils import decode_access_token
@@ -70,22 +70,30 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_
 def root():
     return {"msg": "Todo API running"}
 
-@app.post("/todos/", response_model=schemas.TodoOut)
+@app.post("/activities/", response_model=schemas.TodoOut)
 def create_todo_route(todo: schemas.TodoCreate, db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
     return create_todo(db, todo, current_user.id)
 
-@app.get("/todos/", response_model=list[schemas.TodoOut], )
+@app.get("/activities/", response_model=list[schemas.TodoOut], )
 def read_todos(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
     return get_todos(db, current_user)
 
-@app.get("/todos/{id}", response_model=schemas.TodoOut)
+@app.get("/overdue/activities", response_model=list[schemas.TodoOut])
+def read_overdue_activities(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
+    return get_overdue_todos(db, current_user)
+
+@app.get("/completed/activities", response_model=list[schemas.TodoOut])
+def read_completed_activities(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
+    return get_completed_activities(db, current_user)
+
+@app.get("/activity/{id}", response_model=schemas.TodoOut)
 def read_todo(id: int, db: Session = Depends(get_db)):
     todo = get_todo_by_id(db, id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
     return todo
 
-@app.delete("/todos/{id}")
+@app.delete("/activity/{id}")
 def delete_todo_route(
     id: int,
     db: Session = Depends(get_db),
@@ -97,13 +105,13 @@ def delete_todo_route(
         raise HTTPException(status_code=404, detail="Todo not found")
     return {"message": "Deleted successfully"}
 
-@app.put("/todos/{id}/toggle", response_model=schemas.TodoOut)
+@app.put("/activity/toggle", response_model=schemas.TodoOut)
 def toggle_todo_route(
-    id: int,
+    toggle_data: schemas.ToggleNote,
     db: Session = Depends(get_db),
     current_user: TodoUsers = Depends(get_current_user)
 ):
-    updated_todo = toggle_todo_completed(db, id, current_user)
+    updated_todo = toggle_todo_completed(db, current_user, toggle_data)
     if not updated_todo:
         raise HTTPException(status_code=404, detail="Todo not found")
     return updated_todo
