@@ -5,13 +5,19 @@ from models import Todo, TodoUsers
 import schemas
 
 def get_todos(db: Session, current_user: TodoUsers):
-    return db.query(Todo).filter(Todo.user_id == current_user.id).all()
+    return db.query(Todo).filter(
+        and_(
+            Todo.user_id == current_user.id,
+            Todo.completed.is_(False)
+        )
+    ).all()
 
 def get_overdue_todos(db: Session, current_user: TodoUsers):
     return db.query(Todo).filter(
         and_(
             Todo.user_id == current_user.id,
-            Todo.due_date < date.today()
+            Todo.due_date < date.today(),
+            Todo.completed.is_(False)
         )
     ).all()
 

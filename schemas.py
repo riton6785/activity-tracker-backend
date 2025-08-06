@@ -6,6 +6,7 @@ class TodoBase(BaseModel):
     completed: bool = False
     summary: str
     due_date: date
+    finish_note: str | None
 
 class TodoCreate(TodoBase):
     pass
