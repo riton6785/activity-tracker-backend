@@ -51,3 +51,14 @@ def toggle_todo_completed(db: Session, current_user: TodoUsers, toggle_data: sch
         db.refresh(todo)
         return todo
     return None
+
+def update_activity(db:Session, current_user: TodoUsers, activity: schemas.EditActivities):
+    todo = get_todo_by_id(db, activity.id)
+    if todo and todo.user_id == current_user.id:
+        todo.summary = activity.summary
+        todo.due_date = activity.due_date
+        todo.task = activity.task
+        db.commit()
+        db.refresh(todo)
+        return todo
+    return None

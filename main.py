@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import schemas
-from crud import create_todo, get_todo_by_id, get_todos, delete_todo, create_user, login_user, toggle_todo_completed, get_overdue_todos, get_completed_activities
+from crud import create_todo, get_todo_by_id, get_todos, delete_todo, create_user, login_user, toggle_todo_completed, get_overdue_todos, get_completed_activities, update_activity
 from models import TodoUsers
 from database import SessionLocal, engine, Base
 from utils import decode_access_token
@@ -116,6 +116,16 @@ def toggle_todo_route(
         raise HTTPException(status_code=404, detail="Todo not found")
     return updated_todo
 
+@app.put("/edit/activity", response_model=schemas.TodoOut)
+def edit_Activities(
+    activity: schemas.EditActivities,
+    db: Session = Depends(get_db),
+    current_user: TodoUsers = Depends(get_current_user)
+):
+    updated_activity = update_activity(db, current_user, activity)
+    if not updated_activity:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return updated_activity
 @app.post("/create/users", response_model=schemas.LoginResponse)
 def create_user_route(user: schemas.UserBase, db: Session = Depends(get_db)):
     existing_user = db.query(TodoUsers).filter_by(email=user.email).first()

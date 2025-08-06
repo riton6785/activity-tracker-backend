@@ -48,3 +48,9 @@ class LoginResponse(BaseModel):
 class ToggleNote(BaseModel):
     id: int
     notes: str
+
+class EditActivities(BaseModel):
+    id: int
+    task: str
+    summary: str
+    due_date: date
