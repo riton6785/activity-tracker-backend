@@ -8,8 +8,11 @@ class TodoBase(BaseModel):
     due_date: date
     finish_note: str | None
 
-class TodoCreate(TodoBase):
-    pass
+class TodoCreate(BaseModel):
+    task: str
+    completed: bool = False
+    summary: str
+    due_date: date
 
 class TodoOut(TodoBase):
     id: int
