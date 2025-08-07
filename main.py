@@ -7,6 +7,8 @@ from database import SessionLocal, engine, Base
 from utils import decode_access_token
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
+from scheduler import start as start_scheduler
+from contextlib import asynccontextmanager
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 oauth2_scheme = HTTPBearer()
@@ -14,7 +16,18 @@ oauth2_scheme = HTTPBearer()
 # Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # STARTUP
+    start_scheduler()
+    
+    yield  # Let the app run
+
+    # SHUTDOWN (if needed)
+    # Stop scheduler here if needed
+
+app = FastAPI(lifespan=lifespan)
 
 # Dependency for DB session
 def get_db():
