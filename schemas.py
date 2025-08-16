@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import Optional
 
 class TodoBase(BaseModel):
     task: str
@@ -57,3 +58,36 @@ class EditActivities(BaseModel):
     task: str
     summary: str
     due_date: date
+
+# Project Schemas
+
+class ProjectCreate(BaseModel):
+    name: str
+    description: str
+    due_date: date
+    completed: bool
+
+class ProjectCreateOut(ProjectCreate):
+    id: int
+    user_id: int
+
+    class Config:
+        from_attributes = True
+
+
+# Task Schemas
+
+class TaskCreate(BaseModel):
+    name: str
+    description: str
+    project_id: int
+    # assignee_id: Optional[int] = None Need to add this in future when adding the collabortaor feature in project
+    due_date: date
+    completed: bool
+
+class TaskCreateOut(TaskCreate):
+    id: int
+    user_id: int
+
+    class Config:
+        from_attributes = True

@@ -26,7 +26,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001", "https://activity-tracker-frontend-two.vercel.app"],
+    allow_origins=["http://localhost:3000", "https://activity-tracker-frontend-two.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],  # allow all methods like GET, POST, PUT, DELETE
     allow_headers=["*"],  # allow all headers
