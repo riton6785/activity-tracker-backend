@@ -2,6 +2,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.utils import formataddr
 import os
 from dotenv import load_dotenv
 
@@ -30,7 +31,7 @@ def send_reminder_email(to_email: str, task):
     """
 
     message = MIMEMultipart()
-    message['From'] = FROM_EMAIL
+    message["From"] = formataddr(("Focus Pulse", FROM_EMAIL))
     message['To'] = to_email
     message['Subject'] = subject
     message.attach(MIMEText(body, 'plain'))

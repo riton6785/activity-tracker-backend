@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from datetime import date
+from pydantic import BaseModel, EmailStr
+from datetime import date, datetime
 from typing import Optional
+from enum import Enum
 
 class TodoBase(BaseModel):
     task: str
@@ -91,3 +92,23 @@ class TaskCreateOut(TaskCreate):
 
     class Config:
         from_attributes = True
+
+class InviteStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    declined = "declined"
+    revoked = "revoked"
+    expired = "expired"
+
+class InviteCreate(BaseModel):
+    email: EmailStr
+
+class InviteOut(BaseModel):
+    id: int
+    project_id: int
+    invitee_email: EmailStr
+    status: InviteStatus
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
