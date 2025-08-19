@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Date, Boolean
 from sqlalchemy.orm import relationship
 from database import Base
+from .assignee import task_assignees
 
 
 class Tasks(Base):
@@ -14,7 +15,6 @@ class Tasks(Base):
     project = relationship('Projects', back_populates='tasks')
     user_id = Column(Integer, ForeignKey('todo_users.id', ondelete='CASCADE'))
     owner = relationship('TodoUsers', back_populates='tasks', foreign_keys=[user_id])
-    assignee_id = Column(Integer, ForeignKey('todo_users.id', ondelete='CASCADE'), nullable=True)
-    assignee = relationship('TodoUsers', back_populates='assigned_tasks', foreign_keys=[assignee_id])
+    assignees = relationship('TodoUsers', secondary=task_assignees, back_populates='tasks_assigned')
     due_date = Column(Date, nullable=True)
     completed = Column(Boolean, default=False)

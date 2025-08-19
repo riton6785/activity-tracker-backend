@@ -86,6 +86,13 @@ class TaskCreate(BaseModel):
     due_date: date
     completed: bool
 
+class TaskUpdate(BaseModel):
+    id: int
+    name: str
+    description: str
+    due_date: date
+    assignee_id: list[int]
+
 class TaskCreateOut(TaskCreate):
     id: int
     user_id: int
