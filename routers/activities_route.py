@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-
-from models import TodoUsers
-from crud import get_completed_activities, create_todo, get_overdue_todos, get_todos, get_todo_by_id, delete_todo, toggle_todo_completed, update_activity
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
+from models import TodoUsers, Todo
+from crud import get_completed_activities, create_todo, get_overdue_todos, get_todos, get_todo_by_id, delete_todo, toggle_todo_completed, update_activity
 from dependency import get_db, get_current_user
 import schemas
 
@@ -16,6 +16,16 @@ def create_todo_route(todo: schemas.TodoCreate, db: Session = Depends(get_db), c
 @router.get("/activities/", response_model=list[schemas.TodoOut], )
 def read_todos(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
     return get_todos(db, current_user)
+
+@router.get("/activities/{task_id}", response_model=list[schemas.TodoOut], )
+def read_tasks_todos(task_id: int, db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
+    return db.query(Todo).filter(
+        and_(
+            Todo.user_id == current_user.id,
+            Todo.completed.is_(False),
+            Todo.task_id == task_id
+        )
+    ).all()
 
 @router.get("/overdue/activities", response_model=list[schemas.TodoOut])
 def read_overdue_activities(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):

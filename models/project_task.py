@@ -18,3 +18,5 @@ class Tasks(Base):
     assignees = relationship('TodoUsers', secondary=task_assignees, back_populates='tasks_assigned')
     due_date = Column(Date, nullable=True)
     completed = Column(Boolean, default=False)
+
+    activities = relationship('Todo', back_populates='linked_task', cascade="all, delete", passive_deletes=True)

@@ -15,6 +15,7 @@ class TodoCreate(BaseModel):
     completed: bool = False
     summary: str
     due_date: date
+    task_id: Optional[int] = None
 
 class TodoOut(TodoBase):
     id: int
