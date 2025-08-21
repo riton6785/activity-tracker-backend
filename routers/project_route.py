@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.post('/create/project', response_model=schemas.ProjectCreateOut)
 def create_project_route(project:schemas.ProjectCreate, db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
-    return create_project(project, db, current_user.id)
+    return create_project(project, db, current_user)
 
 @router.get("/projects", response_model=list[schemas.ProjectCreateOut])
 def readProjects(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):

@@ -61,7 +61,6 @@ def update_task_details(update_data: schemas.TaskUpdate, db: Session = Depends(g
     
 @router.put("/task/markdone/{task_id}")
 def mark_done(task_id: int, db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
-    breakpoint()
     task = db.query(Tasks).filter(Tasks.id == task_id).first()
     task.completed = True
     db.commit()

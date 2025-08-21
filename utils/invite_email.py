@@ -15,7 +15,7 @@ FROM_EMAIL = os.getenv("FROM_EMAIL")
 
 def send_invite_email(to_email: str, project, token: str):
     subject = f"Invitation to collaborate on '{project.name}'"
-    inviteUrl = f"http://localhost:3000/invite?token={token}"
+    inviteUrl = f"{os.getenv('INVITE_BASE_URL')}/invite?token={token}"
 
     body = f"""
     <html>
