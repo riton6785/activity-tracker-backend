@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.security import HTTPAuthorizationCredentials
 
 from models import TodoUsers, Projects, Tasks
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from crud import create_project
 from models import ProjectInvite, InviteStatus as DBInviteStatus
@@ -19,7 +20,12 @@ def create_project_route(project:schemas.ProjectCreate, db: Session = Depends(ge
 
 @router.get("/projects", response_model=list[schemas.ProjectCreateOut])
 def readProjects(db: Session = Depends(get_db), current_user: TodoUsers = Depends(get_current_user)):
-    return db.query(Projects).filter(Projects.user_id == current_user.id).all()
+    return db.query(Projects).filter(
+        or_(
+            Projects.user_id == current_user.id,
+            Projects.collaborators.any(id=current_user.id)
+        )
+    ).all()
 
 @router.get("/project/{project_id}/tasks", response_model=list[schemas.TaskCreateOut])
 def get_tasks_for_project(project_id: int, db: Session = Depends(get_db)):
